@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Download</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='down5.css') }}">
+</head>
+<body>
+  <h1> Thanks for using We Love Shakespeare </h1>
+  <a href="{{url_for('download_file')}}"><button class='button'>Download Script</button></a>
+
+</body>
+</html>

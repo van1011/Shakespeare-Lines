@@ -1,0 +1,73 @@
+from bs4 import BeautifulSoup as bs
+from fpdf import FPDF
+from replit import db
+import requests
+
+
+def getPlayUrls(): #put play names and URLS in database
+  home_URL = "http://shakespeare.mit.edu/"
+  homepage = requests.get(home_URL)
+  homesoup = bs(homepage.content, 'html.parser')
+
+  #getting play names
+  allplays = homesoup.find_all("td")
+
+  #play names were displayed in a table
+  for col in range(5,8): 
+    current_plays = allplays[col]
+    alinks = current_plays.find_all("a")
+
+    for link in alinks:
+      URL = "http://shakespeare.mit.edu/" + link["href"].split("index")[0] + "full.html"
+      
+      if ("\n" in link.string):
+        name = link.string.split("\n")[1]
+      else:
+        name = link.string
+      db[name] = URL #db is dictionary with {play name: URL}
+
+
+def update_script(playname,charactername):
+    print(playname)
+    print(charactername) 
+
+    playname = playname[1:]
+    print(playname)
+    
+    #setup
+    URL = db[playname]
+    page = requests.get(URL)
+    soup = bs(page.content, 'html.parser')
+
+    #get lines
+    line_list = []
+    list_character_lines = soup.p.find_all('a', string = charactername)
+    for linecode in list_character_lines:
+      theline = linecode.next_sibling.next_sibling.text
+      line_list.append(theline)
+      
+    if line_list==[]:
+      charactername = charactername.lower().title()
+      list_character_lines = soup.p.find_all('a', string = charactername)
+      for linecode in list_character_lines:
+        theline = linecode.next_sibling.next_sibling.text
+        line_list.append(theline)
+        
+
+def create_PDF(line_list, playname, charactername):
+    pdf = FPDF()
+    pdf.add_page()
+
+    pdf.set_font("Times", size = 15)
+    title = "{} - {}".format(playname, charactername)
+    print(title)
+
+    pdf.cell(0,20, txt = title, border = 1, ln = 1, align = 'C')
+
+    for line in line_list:
+      pdf.multi_cell(0,10, txt = line, border = 0, align = 'L')
+
+    global filename
+    filename = title + ".pdf"
+    pdf.output("script.pdf")
+

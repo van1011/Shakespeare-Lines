@@ -1,0 +1,40 @@
+body{
+  background-color: #272727;
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  text-align: center;
+}
+
+img{
+  width:40vw;
+  margin-top:10vh;
+}
+
+.content{
+  margin-left: auto;
+  margin-right: auto;
+  width: 30vw;
+}
+
+h1{
+  margin-top:0vh;
+  color: RGB(249, 208, 154);
+  font-size: 6vh;
+  font-family: "Cochin","Times New Roman",serif;
+  margin-bottom: 0.5vh;
+}
+
+p{
+  color: RGB(249, 208, 154);
+  font-size:2vh;
+  letter-spacing: 0.1vw;
+  margin-bottom:7vh;
+
+}
+
+a{
+  font-style: italic;
+  color:white;
+  font-size:3vh;
+}

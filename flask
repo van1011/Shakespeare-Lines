@@ -1,0 +1,58 @@
+import requests
+from bs4 import BeautifulSoup as bs
+from fpdf import FPDF
+from replit import db
+from flask import Flask, render_template, request, redirect, url_for, flash, send_file
+import jinja2
+
+app = Flask(__name__) 
+
+@app.route("/") 
+def main():
+  return render_template("home.html")
+
+@app.route("/play") 
+def theplay():
+  playDict={}
+  i=1
+  print(type(db))
+  for play in db.keys():
+    playDict[i]=play
+    i+=1
+  return render_template("play.html", playDict=playDict)
+
+@app.route("/character/<play>") 
+def thecharacterplay(play):
+  if play in db:
+    URL = db[play]
+    page = requests.get(URL)
+    soup = bs(page.content, 'html.parser')
+    character_names = soup.find_all('b')
+    charDict = {}
+    i=1
+    for character in character_names:
+        if character.text.upper() not in charDict.values():
+          charDict[i] = character.text.upper()
+          i += 1
+  else:
+    charDict = {}
+  return render_template("character.html", charDict=charDict,playname=play)
+
+
+@app.route("/downloadpage/<play>/<character>")
+def download_page_(play,character): 
+    update_script(play,character)
+    return render_template("download.html")
+
+@app.route("/download")
+def download_file(): 
+    paths = "script.pdf"
+    return send_file(paths, attachment_filename = filename, as_attachment = True, cache_timeout=0)
+
+
+if __name__ == "__main__": #move to bottom
+  app.run(host="0.0.0.0") 
+
+
+
+
